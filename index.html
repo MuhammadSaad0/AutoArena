@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoArena - Compare Vehicles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        background-color: #cccccc;
+        color: #000000;
+      }
+      a { color: #0000ff; text-decoration: underline; }
+      a:visited { color: #551a8b; }
+      a:hover { color: #ff0000; }
+      
+      h1, h2, h3 {
+        font-family: 'Times New Roman', Times, serif;
+      }
+      
+      .retro-button {
+        background: #efefef;
+        border: 2px outset #ffffff;
+        border-right-color: #777;
+        border-bottom-color: #777;
+        color: #000;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 2px 8px;
+        cursor: pointer;
+      }
+      .retro-button:active {
+        border: 2px inset #ffffff;
+        border-right-color: #777;
+        border-bottom-color: #777;
+      }
+      .retro-input {
+        border: 2px inset #ddd;
+        border-right-color: #fff;
+        border-bottom-color: #fff;
+        padding: 3px;
+        background-color: #ffffff;
+        color: #000000;
+      }
+      
+      table.retro-data-table {
+        border: 1px solid #999;
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 12px;
+      }
+      table.retro-data-table th {
+        background-color: #eeeeee;
+        border: 1px solid #999;
+        padding: 4px;
+        text-align: left;
+      }
+      table.retro-data-table td {
+        border: 1px solid #999;
+        padding: 4px;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
+    "three": "https://esm.sh/three@^0.182.0",
+    "recharts": "https://esm.sh/recharts@^3.6.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.5.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
