@@ -117,7 +117,7 @@ export const compareVehiclesStream = async (
   location: string,
   onUpdate: (data: ComparisonResult) => void
 ): Promise<void> => {
-  const model = "gemini-3-flash-preview"; 
+  const model = "gemini-2.5-flash-lite-preview-02-05"; 
 
   // --- Phase 1: Fast Specs (No Tools) ---
   const fastPrompt = `

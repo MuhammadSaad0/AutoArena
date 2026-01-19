@@ -3,6 +3,22 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { ContactShadows, Environment, Float, PerspectiveCamera, Grid } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Explicitly declare Three.js elements for JSX to satisfy TypeScript in environments where R3F types aren't automatically picked up.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: any;
+      mesh: any;
+      boxGeometry: any;
+      meshStandardMaterial: any;
+      pointLight: any;
+      cylinderGeometry: any;
+      ambientLight: any;
+      spotLight: any;
+    }
+  }
+}
+
 const ProceduralCar = ({ color = "#ef4444", position = [0, 0, 0] }: { color?: string; position?: number[] }) => {
   const groupRef = useRef<THREE.Group>(null);
 

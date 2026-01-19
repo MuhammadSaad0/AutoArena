@@ -155,9 +155,9 @@ const App: React.FC = () => {
                  <table className="retro-data-table">
                     <tbody>
                       <tr className="bg-[#eeeeee]">
-                        <th width="20%">Feature</th>
-                        <th width="40%">{result.vehicleA.name}</th>
-                        <th width="40%">{result.vehicleB.name}</th>
+                        <th style={{ width: "20%" }}>Feature</th>
+                        <th style={{ width: "40%" }}>{result.vehicleA.name}</th>
+                        <th style={{ width: "40%" }}>{result.vehicleB.name}</th>
                       </tr>
                       {[
                         ['Engine', 'engine'],
