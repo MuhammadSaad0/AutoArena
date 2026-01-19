@@ -1,20 +1,18 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# AutoArena
 
-# Run and deploy your AI Studio app
+AutoArena is a web application that compares two vehicles side-by-side using the Google Gemini API. It provides technical specifications, market sentiment, financial estimates, and safety ratings tailored to the user's region.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1qEm6fAgmmBzi0XCcQXJ_TW9Go4akKAKy
+- Compare technical specifications (Engine, Power, Torque, Fuel Economy, etc.)
+- Market analysis including New vs Used prices and Resale outlook
+- Active listing search with "Best Deal" highlights
+- Safety ratings and reliability scores
+- Automatic region detection for correct unit display (Metric/Imperial)
 
-## Run Locally
+## Technologies
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- React
+- Google Gemini API (Flash model with Search Tools)
+- Tailwind CSS
+- Recharts for data visualization
