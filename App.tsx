@@ -1,31 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { compareVehiclesStream } from './services/geminiService';
 import { VehicleData, ComparisonResult, ComparisonState } from './types';
 import { VehicleImage } from './components/VehicleImage';
 import { ComparisonChart } from './components/ComparisonChart';
 
+const COUNTRIES = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
+  "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia",
+  "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+  "Fiji", "Finland", "France",
+  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+  "Haiti", "Holy See", "Honduras", "Hungary",
+  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
+  "Jamaica", "Japan", "Jordan",
+  "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan",
+  "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar",
+  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
+  "Oman",
+  "Pakistan", "Palau", "Palestine State", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
+  "Qatar",
+  "Romania", "Russia", "Rwanda",
+  "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+  "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
+  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
+  "Vanuatu", "Venezuela", "Vietnam",
+  "Yemen",
+  "Zambia", "Zimbabwe"
+];
+
 const App: React.FC = () => {
   const [carAInput, setCarAInput] = useState('');
   const [carBInput, setCarBInput] = useState('');
-  const [location, setLocation] = useState<string>('Detecting...');
+  // Default to United States, allow user to change
+  const [location, setLocation] = useState<string>('United States');
   const [state, setState] = useState<ComparisonState>(ComparisonState.IDLE);
   const [result, setResult] = useState<ComparisonResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-            setLocation(`Lat: ${position.coords.latitude.toFixed(2)}, Lon: ${position.coords.longitude.toFixed(2)}`);
-        },
-        () => {
-          setLocation("USA (Default)");
-        }
-      );
-    } else {
-      setLocation("USA (Default)");
-    }
-  }, []);
 
   const handleCompare = async () => {
     if (!carAInput.trim() || !carBInput.trim()) return;
@@ -76,6 +89,7 @@ const App: React.FC = () => {
                          className="retro-input w-64" 
                          value={carAInput}
                          onChange={(e) => setCarAInput(e.target.value)}
+                         placeholder="e.g. 2024 Honda Civic"
                        />
                      </div>
                      <div className="flex items-center gap-2">
@@ -86,15 +100,29 @@ const App: React.FC = () => {
                          value={carBInput}
                          onChange={(e) => setCarBInput(e.target.value)}
                          onKeyDown={(e) => e.key === 'Enter' && handleCompare()}
+                         placeholder="e.g. 2024 Toyota Corolla"
                        />
                      </div>
+                     
+                     {/* New Region Selector */}
+                     <div className="flex items-center gap-2">
+                        <label className="w-24 text-right font-bold text-black text-[13px]">Market / Region:</label>
+                        <input
+                          list="country-list"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          className="retro-input w-64"
+                          placeholder="Type to search country..."
+                        />
+                        <datalist id="country-list">
+                           {COUNTRIES.map(c => <option key={c} value={c} />)}
+                        </datalist>
+                     </div>
+
                      <div className="flex items-center gap-2 mt-2 ml-24">
                        <button onClick={handleCompare} disabled={state === ComparisonState.LOADING} className="retro-button px-6 py-1">
                          {state === ComparisonState.LOADING && !result ? 'Searching...' : 'Compare Items'}
                        </button>
-                       <span className="text-[10px] text-[#666]">
-                         {location.includes('Lat') ? 'Region: Auto-detected' : `Region: ${location}`}
-                       </span>
                      </div>
                    </div>
                  </td>
@@ -207,7 +235,7 @@ const App: React.FC = () => {
                       <table className="retro-data-table">
                         <tbody>
                           <tr>
-                            <th colSpan={3}>Estimated Costs</th>
+                            <th colSpan={3}>Estimated Costs ({location})</th>
                           </tr>
                           <tr>
                             <td></td>
@@ -237,7 +265,7 @@ const App: React.FC = () => {
 
                {/* Listings */}
                <div className="mb-6">
-                 <div className="bg-[#5e7fa2] text-white font-bold px-2 py-1 text-[13px] mb-2">Available Listings</div>
+                 <div className="bg-[#5e7fa2] text-white font-bold px-2 py-1 text-[13px] mb-2">Available Listings ({location})</div>
                  <table width="100%" cellPadding="0" cellSpacing="0" border={0}>
                    <tbody>
                      <tr>
