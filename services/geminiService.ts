@@ -41,74 +41,46 @@ const fastComparisonSchema: Schema = {
 };
 
 // --- SCHEMA 2: Enrichment Data (Market, Listings, Images) ---
-const enrichmentVehicleSchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    imageUrl: { type: Type.STRING, description: "Direct URL to a real image (Wikimedia or Manufacturer)." },
+// Note: This schema is used for reference in the prompt.
+const enrichmentComparisonSchemaStructure = {
+  vehicleA: {
+    imageUrl: "URL_STRING (Wikimedia or Manufacturer)",
     market: {
-      type: Type.OBJECT,
-      properties: {
-        resaleValuePrediction: { type: Type.STRING },
-        marketSentiment: { type: Type.STRING },
-        targetAudience: { type: Type.STRING },
-        averagePriceUsed: { type: Type.STRING },
-        averagePriceNew: { type: Type.STRING },
-      },
-      required: ["marketSentiment", "averagePriceUsed"],
+      resaleValuePrediction: "STRING",
+      marketSentiment: "STRING",
+      targetAudience: "STRING",
+      averagePriceUsed: "STRING",
+      averagePriceNew: "STRING"
     },
     ratings: {
-      type: Type.OBJECT,
-      properties: {
-        safetyRating: { type: Type.STRING, description: "e.g. '5-Star NHTSA' or '5-Star Euro NCAP'" },
-        reliabilityScore: { type: Type.STRING, description: "e.g. '4.5/5 J.D. Power'" },
-      },
-      required: ["safetyRating", "reliabilityScore"],
+      safetyRating: "STRING",
+      reliabilityScore: "STRING"
     },
     financials: {
-      type: Type.OBJECT,
-      properties: {
-        estimatedInsuranceCost: { type: Type.STRING },
-        typicalBankRate: { type: Type.STRING },
-        monthlyPaymentEstimate: { type: Type.STRING },
-        listingsSample: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              title: { type: Type.STRING },
-              price: { type: Type.STRING },
-              source: { type: Type.STRING },
-              url: { type: Type.STRING },
-              isBestDeal: { type: Type.BOOLEAN, description: "True if this is the best value among found listings." },
-            },
-            required: ["title", "price", "source", "url", "isBestDeal"],
-          },
-        },
-      },
-      required: ["typicalBankRate", "listingsSample"],
+      estimatedInsuranceCost: "STRING",
+      typicalBankRate: "STRING",
+      monthlyPaymentEstimate: "STRING",
+      listingsSample: [
+        {
+          title: "STRING",
+          price: "STRING",
+          source: "STRING",
+          url: "STRING",
+          isBestDeal: true // boolean
+        }
+      ]
     },
-    newsHeadlines: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          title: { type: Type.STRING },
-          snippet: { type: Type.STRING },
-          source: { type: Type.STRING },
-        },
-      },
-    },
+    newsHeadlines: [
+      {
+        title: "STRING",
+        snippet: "STRING",
+        source: "STRING"
+      }
+    ]
   },
-  required: ["imageUrl", "market", "ratings", "financials", "newsHeadlines"],
-};
-
-const enrichmentComparisonSchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    vehicleA: enrichmentVehicleSchema,
-    vehicleB: enrichmentVehicleSchema,
-  },
-  required: ["vehicleA", "vehicleB"],
+  vehicleB: {
+    // Same structure as vehicleA
+  }
 };
 
 export const compareVehiclesStream = async (
@@ -117,7 +89,8 @@ export const compareVehiclesStream = async (
   location: string,
   onUpdate: (data: ComparisonResult) => void
 ): Promise<void> => {
-  const model = "gemini-2.5-flash-lite-preview-02-05"; 
+  // Explicitly requested model
+  const model = "gemini-2.5-flash-lite"; 
 
   // --- Phase 1: Fast Specs (No Tools) ---
   const fastPrompt = `
@@ -161,7 +134,11 @@ export const compareVehiclesStream = async (
     4. FIND Safety Ratings (NHTSA/IIHS or Euro NCAP depending on region) and Reliability Scores.
     5. GET FINANCIAL estimates in local currency.
     
-    Use Google Search. Return JSON.
+    Use Google Search. 
+    
+    CRITICAL: Return ONLY a valid JSON object. Do not include any Markdown formatting (no \`\`\`json blocks).
+    The JSON must strictly match this structure:
+    ${JSON.stringify(enrichmentComparisonSchemaStructure, null, 2)}
   `;
 
   try {
@@ -170,13 +147,17 @@ export const compareVehiclesStream = async (
       contents: enrichmentPrompt,
       config: {
         tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json",
-        responseSchema: enrichmentComparisonSchema,
+        // responseMimeType is OMITTED because it cannot be used with tools in this model version
       },
     });
 
     if (response.text) {
-      const enrichmentData = JSON.parse(response.text);
+      let jsonStr = response.text.trim();
+      
+      // Clean up potential markdown formatting if the model adds it
+      jsonStr = jsonStr.replace(/^```json\s*/, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
+
+      const enrichmentData = JSON.parse(jsonStr);
       
       // Merge enrichment data into currentData
       currentData.vehicleA = { ...currentData.vehicleA, ...enrichmentData.vehicleA };

@@ -1,7 +1,5 @@
 {
   "name": "AutoArena AI",
   "description": "A comprehensive vehicle comparison tool using Gemini AI to analyze specs, market sentiment, financials, and 3D visualization.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
+  "requestFramePermissions": []
 }
