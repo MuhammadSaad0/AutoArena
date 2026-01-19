@@ -6,7 +6,7 @@ import { ComparisonChart } from './components/ComparisonChart';
 
 const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
-  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
+  "Bahamas", "Bahrain", "Bangladesh", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
   "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia",
   "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
   "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
@@ -274,7 +274,7 @@ const App: React.FC = () => {
                              <div className="font-bold border-b border-[#ccc] mb-2">{result.vehicleA.name}</div>
                              {result.vehicleA.financials ? (
                                <ul className="list-none pl-0">
-                                 {result.vehicleA.financials.listingsSample.map((l, i) => (
+                                 {(result.vehicleA.financials.listingsSample || []).map((l, i) => (
                                    <li key={i} className="mb-3 border-b border-dotted border-gray-300 pb-1">
                                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="font-bold text-[#0000cc]">{l.title}</a>
                                      {l.isBestDeal && (
@@ -301,7 +301,7 @@ const App: React.FC = () => {
                              <div className="font-bold border-b border-[#ccc] mb-2">{result.vehicleB.name}</div>
                              {result.vehicleB.financials ? (
                                <ul className="list-none pl-0">
-                                 {result.vehicleB.financials.listingsSample.map((l, i) => (
+                                 {(result.vehicleB.financials.listingsSample || []).map((l, i) => (
                                    <li key={i} className="mb-3 border-b border-dotted border-gray-300 pb-1">
                                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="font-bold text-[#0000cc]">{l.title}</a>
                                      {l.isBestDeal && (
